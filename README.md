@@ -2,7 +2,20 @@
 ![License: Apache](https://img.shields.io/badge/License-Apache2.0-yellow.svg) 
 
 This code is built on top of [Transformers](https://github.com/huggingface/transformers) github repository from Huggingface. 
-Purpose of this repository is to provide an easy way for researchers to replicate our work "Factuality Enhanced Language Models for Open-Ended Text Generation" [\[PDF\]](https://arxiv.org/pdf/2206.04624.pdf).
+
+Purpose of this repository is to provide an easy way for researchers to replicate our work:
+"[Factuality Enhanced Language Models for Open-Ended Text Generation](https://arxiv.org/pdf/2206.04624.pdf)", _Nayeon Lee, Wei Ping, Peng Xu, Mostofa Patwary, Mohammad Shoeybi, and Bryan Catanzaro_. 
+
+For factuality evaluation metrics used in this paper, please refer to <https://github.com/nayeon7lee/FactualityPrompt>.
+
+## 1. Setup
+TODO
+
+## 2. Factual Decoding
+TODO
+
+## 3. Sentence Completion Loss
+TODO
 
 ## Citation
 If you use this code, please cite both of the papers listed below:
