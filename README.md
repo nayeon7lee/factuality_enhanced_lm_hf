@@ -14,6 +14,8 @@ TODO
 ## 2. Factual Decoding
 TODO
 
+(Refer to the deployment of factual nucleus decoding in BlenderBot3 - https://github.com/facebookresearch/ParlAI/blob/main/parlai/core/torch_generator_agent.py)
+
 ## 3. Sentence Completion Loss
 TODO
 
