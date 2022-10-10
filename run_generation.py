@@ -185,7 +185,7 @@ def main():
     parser.add_argument("--p", type=float, default=0.9)
     parser.add_argument("--p_decay_rate", type=float, default=0.9)
     parser.add_argument("--p_lower_cap", type=float, default=0.0)
-    parser.add_argument("--reset_patience", type=int, default=1)
+    parser.add_argument("--reset_patience", type=int, default=5)
     
     parser.add_argument("--prefix", type=str, default="", help="Text added prior to input.")
     parser.add_argument("--padding_text", type=str, default="", help="Deprecated, the use of `--prefix` is preferred.")
