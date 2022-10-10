@@ -42,6 +42,7 @@ from .generation_logits_process import (
     TemperatureLogitsWarper,
     TopKLogitsWarper,
     TopPLogitsWarper,
+    FactualTopPLogitsWarper,
     TypicalLogitsWarper,
 )
 from .generation_stopping_criteria import (
@@ -642,6 +643,9 @@ class GenerationMixin:
         temperature: Optional[float] = None,
         num_beams: Optional[int] = None,
         renormalize_logits: Optional[bool] = None,
+        top_p_decay_rate: Optional[float] = None,
+        top_p_lower_cap: Optional[float] = None,
+        reset_patience: Optional[float] = None,
     ) -> LogitsProcessorList:
         """
         This class returns a [`LogitsProcessorList`] list object that contains all relevant [`LogitsWarper`] instances
@@ -663,7 +667,13 @@ class GenerationMixin:
         if top_k is not None and top_k != 0:
             warpers.append(TopKLogitsWarper(top_k=top_k, min_tokens_to_keep=(2 if num_beams > 1 else 1)))
         if top_p is not None and top_p < 1.0:
-            warpers.append(TopPLogitsWarper(top_p=top_p, min_tokens_to_keep=(2 if num_beams > 1 else 1)))
+            
+            if top_p_decay_rate < 1.0:
+                warpers.append(FactualTopPLogitsWarper(top_p=top_p, top_p_decay_rate=top_p_decay_rate, top_p_lower_cap=top_p_lower_cap, reset_patience=reset_patience, 
+                                                   min_tokens_to_keep=(2 if num_beams > 1 else 1)))
+            else:
+                warpers.append(TopPLogitsWarper(top_p=top_p, min_tokens_to_keep=(2 if num_beams > 1 else 1)))
+                    
         if typical_p is not None and typical_p < 1.0:
             warpers.append(TypicalLogitsWarper(mass=typical_p, min_tokens_to_keep=(2 if num_beams > 1 else 1)))
         # `LogitNormalization` should always be the last logit processor, when present
@@ -853,6 +863,9 @@ class GenerationMixin:
         temperature: Optional[float] = None,
         top_k: Optional[int] = None,
         top_p: Optional[float] = None,
+        top_p_decay_rate: Optional[float] = None,
+        top_p_lower_cap: Optional[float] = None,
+        reset_patience: Optional[float] = None,
         typical_p: Optional[float] = None,
         repetition_penalty: Optional[float] = None,
         bad_words_ids: Optional[Iterable[int]] = None,
@@ -942,6 +955,12 @@ class GenerationMixin:
             top_p (`float`, *optional*, defaults to 1.0):
                 If set to float < 1, only the most probable tokens with probabilities that add up to `top_p` or higher
                 are kept for generation.
+            top_p_decay_rate (`float`): 
+                If set to < 1, top_p value will be decayed every iteration as follows: top_p = top_p * top_p_decay_rate
+            top_p_lower_cap (`float`, *optional*): 
+                Sets the lower-bound for how far top_p value can be decayed down to.
+            reset_patience (`int`, *optional*):
+                Resets p-value back to default top_p value.
             typical_p (`float`, *optional*, defaults to 1.0):
                 The amount of probability mass from the original distribution to be considered in typical decoding. If
                 set to 1.0 it takes no effect. See [this paper](https://arxiv.org/pdf/2202.00666.pdf) for more details.
@@ -1306,6 +1325,9 @@ class GenerationMixin:
                 temperature=temperature,
                 num_beams=num_beams,
                 renormalize_logits=renormalize_logits,
+                top_p_decay_rate=top_p_decay_rate,
+                top_p_lower_cap=top_p_lower_cap,
+                reset_patience=reset_patience,
             )
 
             # 11. expand input_ids with `num_return_sequences` additional sequences per batch
@@ -1373,6 +1395,9 @@ class GenerationMixin:
                 temperature=temperature,
                 num_beams=num_beams,
                 renormalize_logits=renormalize_logits,
+                top_p_decay_rate=top_p_decay_rate,
+                top_p_lower_cap=top_p_lower_cap,
+                reset_patience=reset_patience
             )
 
             if stopping_criteria.max_length is None:
@@ -3331,7 +3356,7 @@ def top_k_top_p_filtering(
 
     Args:
         logits: logits distribution shape (batch size, vocabulary size)
-        top_k (`int`, *optional*, defaults to 0):
+        tp_k (`int`, *optionoal*, defaults to 0):
             If > 0, only keep the top k tokens with highest probability (top-k filtering)
         top_p (`float`, *optional*, defaults to 1.0):
             If < 1.0, only keep the top tokens with cumulative probability >= top_p (nucleus filtering). Nucleus

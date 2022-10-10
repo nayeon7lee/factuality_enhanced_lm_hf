@@ -209,6 +209,68 @@ class TopPLogitsWarper(LogitsWarper):
         return scores
 
 
+class FactualTopPLogitsWarper(LogitsWarper):
+    """
+    [`LogitsWarper`] that performs `factual` top-p which decays p-value by top_p_decay_rate. 
+
+    Args:
+        top_p (`float`):
+            If set to < 1, only the most probable tokens with probabilities that add up to `top_p` or higher are kept
+            for generation.
+        top_p_decay_rate (`float`): 
+            If set to < 1, top_p value will be decayed every iteration as follows: top_p = top_p * top_p_decay_rate
+        top_p_lower_cap (`float`, *optional*, default=0.0): 
+            Sets the lower-bound for how far top_p value can be decayed down to.
+        filter_value (`float`, *optional*, defaults to `-float("Inf")`):
+            All filtered values will be set to this float value.
+        min_tokens_to_keep (`int`, *optional*, defaults to 1):
+            Minimum number of tokens that cannot be filtered.
+    """
+
+    def __init__(self, top_p: float, top_p_decay_rate: float, top_p_lower_cap: float = 0.0, reset_patience: int = 1, filter_value: float = -float("Inf"), min_tokens_to_keep: int = 1):
+        top_p = float(top_p)
+        if top_p < 0 or top_p > 1.0:
+            raise ValueError(f"`top_p` has to be a float > 0 and < 1, but is {top_p}")
+
+        self.og_top_p = top_p
+        self.top_p = top_p
+        
+        self.top_p_decay_rate = top_p_decay_rate
+        self.top_p_lower_cap = top_p_lower_cap
+        
+        self.reset_patience = reset_patience
+        self.p_reset_counter = 0
+        
+        self.filter_value = filter_value
+        self.min_tokens_to_keep = min_tokens_to_keep
+
+    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
+        self.p_reset_counter +=1
+        
+        if self.p_reset_counter % self.reset_patience == 0:
+            self.top_p, self.p_reset_counter = self.og_top_p, 0
+            
+        self.top_p = max(self.top_p * self.top_p_decay_rate, self.top_p_lower_cap)
+            
+        
+        sorted_logits, sorted_indices = torch.sort(scores, descending=True)
+        cumulative_probs = sorted_logits.softmax(dim=-1).cumsum(dim=-1)
+
+        # Remove tokens with cumulative top_p above the threshold (token with 0 are kept)
+        sorted_indices_to_remove = cumulative_probs > self.top_p
+        if self.min_tokens_to_keep > 1:
+            # Keep at least min_tokens_to_keep (set to min_tokens_to_keep-1 because we add the first one below)
+            sorted_indices_to_remove[..., : self.min_tokens_to_keep - 1] = 0
+        # Shift the indices to the right to keep also the first token above the threshold
+        sorted_indices_to_remove[..., 1:] = sorted_indices_to_remove[..., :-1].clone()
+        sorted_indices_to_remove[..., 0] = 0
+
+        # scatter sorted tensors to original indexing
+        indices_to_remove = sorted_indices_to_remove.scatter(1, sorted_indices, sorted_indices_to_remove)
+        scores = scores.masked_fill(indices_to_remove, self.filter_value)
+        
+        return scores
+
 class TopKLogitsWarper(LogitsWarper):
     r"""
     [`LogitsWarper`] that performs top-k, i.e. restricting to the k highest probability elements.
