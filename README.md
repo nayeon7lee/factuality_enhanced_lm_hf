@@ -1,7 +1,7 @@
 # Factuality Enhanced Language Models for Open-Ended Text Generation (HF)
 ![License: Apache](https://img.shields.io/badge/License-Apache2.0-yellow.svg) 
 
-This code is built on top of [Transformers](https://github.com/huggingface/transformers) github repository from Huggingface. 
+This code is built on top of [Transformers](https://github.com/huggingface/transformers) v4.20.1 github repository from Huggingface. 
 
 Purpose of this repository is to provide an easy way for researchers to replicate our work:
 "[Factuality Enhanced Language Models for Open-Ended Text Generation](https://arxiv.org/pdf/2206.04624.pdf)", _Nayeon Lee, Wei Ping, Peng Xu, Mostofa Patwary, Mohammad Shoeybi, and Bryan Catanzaro_. 
@@ -9,15 +9,30 @@ Purpose of this repository is to provide an easy way for researchers to replicat
 For factuality evaluation metrics used in this paper, please refer to <https://github.com/nayeon7lee/FactualityPrompt>.
 
 ## 1. Setup
-TODO
+All the requirements needed to run Transformers v4.20.1 codebase. Please refer to their github for setup.
 
 ## 2. Factual Decoding
-TODO
 
-(Refer to the deployment of factual nucleus decoding in BlenderBot3 - https://github.com/facebookresearch/ParlAI/blob/main/parlai/core/torch_generator_agent.py)
+```sh
+MODEL_NAME=model_name
+P_VAL=0.9
+P_DECAY_RATE=0.9
+P_LOWERBOUND=0.3
+RESET_PATIENCE=5
 
-## 3. Sentence Completion Loss
-TODO
+python run_generation.py   \
+    --model_type=${MODEL_NAME} \
+    --model_name_or_path=${MODEL_NAME} \
+    --p ${P_VAL} \
+    --p_decay_rate ${P_DECAY_RATE} \
+    --p_lower_cap ${P_LOWERBOUND} \
+    --reset_patience ${RESET_PATIENCE}
+```
+
+Refer to the deployment of factual nucleus decoding in MegatronLM codebase [here](https://github.com/NVIDIA/Megatron-LM/blob/main/megatron/text_generation/generation.py#L207)
+
+(Refer to the deployment of factual nucleus decoding in BlenderBot3 [here](https://github.com/facebookresearch/ParlAI/blob/main/parlai/core/torch_generator_agent.py)
+
 
 ## Citation
 If you use this code, please cite both of the papers listed below:
