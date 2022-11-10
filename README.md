@@ -1,4 +1,4 @@
-# Factuality Enhanced Language Models for Open-Ended Text Generation (HF)
+# Factuality Enhanced Language Models for Open-Ended Text Generation (Hugging Face Version)
 ![License: Apache](https://img.shields.io/badge/License-Apache2.0-yellow.svg) 
 
 This code is built on top of [Transformers](https://github.com/huggingface/transformers) v4.20.1 github repository from Huggingface. 
@@ -29,9 +29,9 @@ python run_generation.py   \
     --reset_patience ${RESET_PATIENCE}
 ```
 
-Refer to the deployment of factual nucleus decoding in MegatronLM codebase [here](https://github.com/NVIDIA/Megatron-LM/blob/main/megatron/text_generation/generation.py#L207)
+You can check the implementation of factual nucleus decoding in MegatronLM codebase [here](https://github.com/NVIDIA/Megatron-LM/blob/main/megatron/text_generation/generation.py#L207)
 
-(Refer to the deployment of factual nucleus decoding in BlenderBot3 [here](https://github.com/facebookresearch/ParlAI/blob/main/parlai/core/torch_generator_agent.py)
+You can check the implementation of factual nucleus decoding in BlenderBot3 [here](https://github.com/facebookresearch/ParlAI/blob/main/parlai/core/torch_generator_agent.py)
 
 
 ## Citation
