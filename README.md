@@ -4,7 +4,7 @@
 This code is built on top of [Transformers](https://github.com/huggingface/transformers) v4.20.1 github repository from Huggingface. 
 
 Purpose of this repository is to provide an easy way for researchers to replicate our work:
-"[Factuality Enhanced Language Models for Open-Ended Text Generation](https://arxiv.org/pdf/2206.04624.pdf)", _Nayeon Lee, Wei Ping, Peng Xu, Mostofa Patwary, Mohammad Shoeybi, and Bryan Catanzaro_. 
+"[Factuality Enhanced Language Models for Open-Ended Text Generation](https://arxiv.org/pdf/2206.04624.pdf)", _Nayeon Lee, Wei Ping, Peng Xu, Mostofa Patwary, Pascale Fung, Mohammad Shoeybi, and Bryan Catanzaro_. 
 
 For factuality evaluation metrics used in this paper, please refer to <https://github.com/nayeon7lee/FactualityPrompt>.
 
@@ -41,7 +41,7 @@ If you use this code, please cite both of the papers listed below:
 @misc{https://doi.org/10.48550/arxiv.2206.04624,
   doi = {10.48550/ARXIV.2206.04624},
   url = {https://arxiv.org/abs/2206.04624},
-  author = {Lee, Nayeon and Ping, Wei and Xu, Peng and Patwary, Mostofa and Shoeybi, Mohammad and Catanzaro, Bryan},
+  author = {Lee, Nayeon and Ping, Wei and Xu, Peng and Patwary, Mostofa and Fung, Pascale and Shoeybi, Mohammad and Catanzaro, Bryan},
   keywords = {Computation and Language (cs.CL), Artificial Intelligence (cs.AI), Computers and Society (cs.CY), Machine Learning (cs.LG), FOS: Computer and information sciences, FOS: Computer and information sciences},
   title = {Factuality Enhanced Language Models for Open-Ended Text Generation},
   publisher = {arXiv},
